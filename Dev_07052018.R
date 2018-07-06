@@ -13,9 +13,9 @@ for(i in 1:length(input_files)){
     require(data.table)
     metagroup <- data.table(sortmeltmeta)
     metamax <- metagroup[metagroup[, .I[value == max(value)], by=variable]$V1]
-    topmeta <- data.frame(metagroup[1:10])
+    topmeta <- data.frame(metamax[1:10])
     input_files.plot <- ggplot(data=topmeta) + aes(x=rownames(topmeta, do.NULL = TRUE, prefix = "Row"), fill=variable) + geom_bar()
-    ggsave(filename = paste("metaphlan.pdf"), plot = input_files.plot, device = "pdf", path = "~", scale = 1, width = NA, height = NA, dpi = 300, limitsize = TRUE)
+    ggsave(filename = paste("metaphlan.pdf"), plot = input_files.plot, device = "pdf", path = "~", scale = 0.25, width = NA, height = NA, dpi = 300, limitsize = TRUE)
 
     
     
@@ -30,7 +30,7 @@ for(i in 1:length(input_files)){
     qiimemax <- qiimegroup[qiimegroup[, .I[value == max(value)], by=variable]$V1]
     topqiime <- data.frame(qiimemax[1:10])
     input_files.plot <- ggplot(data=topqiime) + aes(x=rownames(topqiime, do.NULL = TRUE, prefix = "Row"), fill=variable) + geom_bar()
-    ggsave(filename = paste("qiime.pdf"), plot = input_files.plot, device = "pdf", path = "~", scale = 1, width = NA, height = NA, dpi = 300, limitsize = TRUE)
+    ggsave(filename = paste("qiime.pdf"), plot = input_files.plot, device = "pdf", path = "~", scale = 0.25, width = NA, height = NA, dpi = 300, limitsize = TRUE)
     
   }
 }
