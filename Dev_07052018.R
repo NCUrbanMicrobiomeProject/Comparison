@@ -14,11 +14,9 @@ for(i in 1:length(input_files)){
     metagroup <- data.table(sortmeltmeta)
     metamax <- metagroup[metagroup[, .I[value == max(value)], by=variable]$V1]
     topmeta <- data.frame(metamax[1:30])
-    input_files.plot <- ggplot(data=topmeta) + aes(x=Sample.Location, fill=variable) + geom_bar()
+    input_files.plot <- ggplot(data=topmeta) + aes(y=value, x=Sample.Location, fill=variable) + geom_bar(stat = "identity")
     ggsave(filename = paste("metaphlan.pdf"), plot = input_files.plot, device = "pdf", path = "~", width = NA, height = NA, dpi = 300, limitsize = TRUE)
 
-    
-    
     
   } else{
     start <- 51
@@ -29,7 +27,7 @@ for(i in 1:length(input_files)){
     qiimegroup <- data.table(sortmeltqiime)
     qiimemax <- qiimegroup[qiimegroup[, .I[value == max(value)], by=variable]$V1]
     topqiime <- data.frame(qiimemax[1:20])
-    input_files.plot <- ggplot(data=topqiime) + aes(x=Sample.Location, fill=variable) + geom_bar()
+    input_files.plot <- ggplot(data=topqiime) + aes(y = value, x=Sample.Location, fill=variable) + geom_bar(stat = "identity")
     ggsave(filename = paste("qiime.pdf"), plot = input_files.plot, device = "pdf", path = "~", width = 10, height = 10, dpi = 300, limitsize = TRUE)
     
   }
