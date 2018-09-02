@@ -40,17 +40,34 @@ qiimephylum_melt <- melt(qiimephylum, id.vars=colnames(qiimephylum)[c(4,31)], me
 qiimeorder_melt <- melt(qiimeorder, id.vars=colnames(qiimeorder)[c(4,31)], measure.vars=colnames(qiimeorder)[49:ncol(qiimeorder)])
 #qiimespecies_melt <- melt(qiimespecies, id.vars=colnames(qiimespecies)[1], measure.vars=colnames(qiimespecies)[49:2650])
 
-#Combining data frames
 
-combineclass <- merge(metaclass_melt, qiimeclass_melt, by="Sample.Location")
-combinefamily <-  merge(metafamily_melt, qiimefamily_melt, by="Sample.Location")
-combinegenus <- merge(metagenus_melt, qiimegenus_melt, by="Sample.Location")
-combinephylum <- merge(metaphylum_melt, qiimephylum_melt, by="Sample.Location")
-combineorder <- merge(metaorder_melt, qiimeorder_melt, by="Sample.Location")
+#Get just the taxa names
 
-metaclassvar <- unique(combineclass$variable.x)
-qiimeclassvar <- unique(combineclass$variable.y)
-classbind <- cbind(metaclassvar, qiimeclassvar)
-vennDiagram(classbind, include="both", names=c("MetaPhlAn", "QIIME"))
+metaphylumvar <- unique(metaphylum_melt$variable)
+qiimephylumvar <- unique(qiimephylum_melt$variable)
+metaclassvar <- unique(metaclass_melt$variable)
+qiimeclassvar <- unique(qiimeclass_melt$variable)
+metafamilyvar <- unique(metafamily_melt$variable)
+qiimefamilyvar <- unique(qiimefamily_melt$variable)
+metagenusvar <- unique(metagenus_melt$variable)
+qiimegenusvar <- unique(qiimegenus_melt$variable)
+metaordervar <- unique(metaorder_melt$variable)
+qiimeordervar <- unique(qiimeorder_melt$variable)
+
+#Split the names in QIIME
+
+qiimephylumsplit <- strsplit2(qiimephylumvar, split=".p__")
+qiimeclasssplit <- strsplit2(qiimeclassvar, split=".c__")
+qiimefamilysplit <- strsplit2(qiimefamilyvar, split=".f__")
+qiimeordersplit <- strsplit2(qiimeordervar, split=".o__")
+qiimegenussplit <- strsplit2(qiimegenusvar, split=".g__")
+
+#Separate to get the specific taxa names
+
+qiimephylumtaxa <- qiimephylumsplit[,c(2)]
+qiimeclasstaxa <- qiimeclasssplit[,c(2)]
+qiimefamilytaxa <- qiimefamilysplit[,c(2)]
+qiimeordertaxa <- qiimeordersplit[,c(2)]
+qiimegenustaxa <- qiimegenussplit[,c(2)]
 
 
