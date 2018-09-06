@@ -1,3 +1,4 @@
+rm(list=ls())
 library("phyloseq")
 library("ggplot2")
 
@@ -38,14 +39,16 @@ for(i in 1:length(taxaLevels)){
   metaphlanTaxaColStart <- 48
   metaphlanMetadata <- 1:47
   
-  orderThing <- intersect(qiime.raw$MetaPhlAnResults2, metaphlan.raw$MetaPhlAnResults2)
+  orderThing <- intersect(metaphlan.raw$MetaPhlAnResults2, qiime.raw$MetaPhlAnResults2)
   
-  qiime.raw <- qiime.raw[match(orderThing, qiime.raw$MetaPhlAnResults2),]
+  metaphlan.raw <- metaphlan.raw[match(orderThing, qiime.raw$MetaPhlAnResults2),] 
   metaphlan.raw <- metaphlan.raw[match(orderThing, metaphlan.raw$MetaPhlAnResults2),]
-  
+  metaphlan.raw$Sample <- ifelse((metaphlan.raw$Sample == "UW A") | (metaphlan.raw$Sample == "UW B") | (metaphlan.raw$Sample == "MNT A") | (metaphlan.raw$Sample == "MNT B"), "Control", ifelse((metaphlan.raw$Sample == "UP A") | (metaphlan.raw$Sample == "UP B"), "Upstream", ifelse((metaphlan.raw$Sample == "DS A") | (metaphlan.raw$Sample == "DS B"), "Downstream", ifelse((metaphlan.raw$Sample == "HOSP") | (metaphlan.raw$Sample == "RES") | (metaphlan.raw$Sample == "INF"), "Influent", ifelse((metaphlan.raw$Sample == "UV") | (metaphlan.raw$Sample == "PCE") |(metaphlan.raw$Sample == "ATE")|(metaphlan.raw$Sample == "PCI") | (metaphlan.raw$Sample == "FCE"), "WWTP", NA)))))
+  metaphlan.raw <- metaphlan.raw[complete.cases(metaphlan.raw),]
   otumat = metaphlan.raw[,metaphlanTaxaColStart:ncol(metaphlan.raw)]
   rownames(otumat) <- metaphlan.raw$MetaPhlAnResults2
   otumat <- data.matrix(otumat)
+  
   #testo <- colnames(otumat)[1:10]
   #otumat <- otumat[1:10, ]
   
@@ -63,31 +66,14 @@ for(i in 1:length(taxaLevels)){
   physeq = phyloseq(OTU, TAX, sampledata)
   test.subset = subset_taxa(physeq, phylum == "Actinobacteria")
   test.subset = subset_samples(physeq, Location == "Mallard Creek")
-  plot_bar(test.subset, fill = "phylum", title = "MetaPhlAn Relative Abundance: Phylum") + theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())
+  plot_bar(test.subset, fill = "phylum", title = "MetaPhlAn Relative Abundance: Phylum") + theme(axis.title.x=element_blank(),axis.text.x=element_blank(), axis.ticks.x = element_blank())
   metaphlan.ord <- ordinate(physeq, method = "PCoA", distance = "bray")
-  for(NewSample in sample_data(physeq)$Sample){
-    if(NewSample == "MNT A" | NewSample == "MNT B" | NewSample == "UW A" | NewSample == "UWB"){
-      NewSample <- "Control"
-    }else{
-      if(NewSample == "UP A" | NewSample == "UP B"){
-        NewSample <- "Upstream"
-      }else{
-        if(NewSample == "DS A" | NewSample == "DS B"){
-          NewSample <- "Downstream"
-        }else{
-          if(NewSample == "HOSP" | NewSample == "RES" | NewSample == "INF"){
-            NewSample <- "Influent"
-          }
-        }
-      }
-    }
-  }
-  p1 <- plot_ordination(physeq, metaphlan.ord, type="samples", color= NewSample, title="Samples: MetaPhlAn", shape = "Location")
-  
+  p1 <- plot_ordination(physeq, metaphlan.ord, type="samples", color= "Sample", title="Samples by Location: MetaPhlAn", shape = "Location")
   p1 <- plot_ordination(physeq, metaphlan.ord, type="taxa", color="phylum", title="taxa")
   print(p1)
   #p1 + facet_wrap(~phylum, 5)
 }
+
 
 #make the equivalent graph for Metaphlan 
 #Explore different variables and produce a couple more PCoA plots
